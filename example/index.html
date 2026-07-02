@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OnchainSuite In-App SDK — demo</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 640px;
+        margin: 48px auto;
+        padding: 0 16px;
+        color: #111;
+      }
+      button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #6d5efc;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      code { background: #f2f2f5; padding: 2px 5px; border-radius: 4px; }
+      #log { margin-top: 16px; font-size: 13px; color: #444; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>In-App Push demo</h1>
+    <p>
+      Connect a wallet to authenticate and start receiving live notifications.
+      Trigger a test push from <em>Dashboard → Integrations → In-App → Test push</em>.
+    </p>
+    <button id="connect">Connect wallet &amp; listen</button>
+    <div id="log"></div>
+
+    <!-- 1) socket.io-client (exposes window.io) -->
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+
+    <!-- 2) The SDK. After publishing, swap the import for:
+         import { OnchainSuite } from "https://esm.sh/@onchainsuite/sdk"; -->
+    <script type="module">
+      import { OnchainSuite } from "../dist/index.js";
+
+      const logEl = document.getElementById("log");
+      const log = (m) => (logEl.textContent += m + "\n");
+
+      const os = new OnchainSuite("pk_test_yourorg_replace_me", {
+        apiBaseUrl: "https://api.onchainsuite.com", // your API host
+        debug: true,
+        display: { position: "bottom-right", accent: "#6d5efc", duration: 10000 },
+        onNotification: (n) => {
+          log(`📩 ${n.title} — ${n.body}`);
+          // return false here to render it yourself instead of the built-in toast
+        },
+      });
+
+      os.on("connected", () => log("✅ connected"));
+      os.on("disconnected", () => log("… disconnected (will retry)"));
+      os.on("error", (e) => log("⚠️ " + (e?.message ?? "error")));
+
+      document.getElementById("connect").addEventListener("click", async () => {
+        try {
+          await os.start(); // prompts window.ethereum to sign
+          log("listening for notifications…");
+        } catch (e) {
+          log("auth failed: " + (e?.message ?? e));
+        }
+      });
+    </script>
+  </body>
+</html>
