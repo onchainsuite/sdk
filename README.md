@@ -16,7 +16,7 @@ is `socket.io-client`.
 ## Install
 
 ```bash
-npm i @onchainsuite/sdk socket.io-client
+npm i @onchainsuite/sdk
 ```
 
 No build step? Load it from a CDN (load `socket.io-client` first so the SDK finds
