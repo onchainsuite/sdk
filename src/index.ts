@@ -1,11 +1,11 @@
-import { createToastRenderer, type ToastRenderer } from "./renderer";
+import { createToastRenderer, type ToastRenderer } from "./renderer.js";
 import type {
   ClientEvent,
   Eip1193Provider,
   EventType,
   Notification,
   OnchainSuiteOptions,
-} from "./types";
+} from "./types.js";
 
 export type {
   Notification,
@@ -14,7 +14,7 @@ export type {
   OnchainSuiteOptions,
   NotificationActions,
   SignMessageFn,
-} from "./types";
+} from "./types.js";
 
 /** Minimal socket shape we rely on (a subset of socket.io-client's Socket). */
 interface MinimalSocket {
@@ -244,17 +244,15 @@ export class OnchainSuite {
     const g = globalThis as unknown as { io?: IoFactory };
     if (typeof g.io === "function") return g.io;
     try {
-      // Computed specifier so socket.io-client stays an optional peer dependency.
-      const spec = "socket.io-client";
-      const mod = (await import(/* @vite-ignore */ spec)) as {
-        io?: IoFactory;
-      };
+      // socket.io-client is a bundled dependency — a literal dynamic import
+      // lets bundlers resolve/code-split it while keeping startup lazy.
+      const mod = (await import("socket.io-client")) as { io?: IoFactory };
       if (mod.io) return mod.io;
     } catch {
-      /* not installed */
+      /* CDN/script-tag environments land in the error below */
     }
     throw new Error(
-      "socket.io-client not found. Install it, load it via <script>, or pass `ioClient`."
+      "socket.io-client could not be loaded. In script-tag setups load socket.io-client first, or pass `ioClient`."
     );
   }
 

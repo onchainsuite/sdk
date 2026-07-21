@@ -10,8 +10,8 @@ const os = new OnchainSuite("pk_live_yourorg_xxx");
 await os.start(); // wallet signs in → notifications start showing
 ```
 
-That's the whole integration. No framework required; the only runtime dependency
-is `socket.io-client`.
+That's the whole integration. No framework required — `socket.io-client` is
+bundled as a dependency, nothing else to install.
 
 ## Install
 
@@ -204,4 +204,4 @@ Security notes:
 
 ## Docs
 
-s- Runnable demo: [`example/index.html`](./example/index.html).
+- Runnable demo: [`example/index.html`](./example/index.html).

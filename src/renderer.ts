@@ -1,4 +1,4 @@
-import type { DisplayOptions, Notification } from "./types";
+import type { DisplayOptions, Notification } from "./types.js";
 
 /**
  * Zero-dependency toast renderer for notifications. Injects a fixed-position
